@@ -4,3 +4,6 @@ class Trash:
         self.x = x
         self.y = y
         self.kind = kind
+
+    def __str__(self):
+        return f"{self.kind}"

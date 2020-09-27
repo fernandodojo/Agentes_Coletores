@@ -9,8 +9,8 @@ class Board:
         with open("configs/configs.json") as i:
             self.__config = json.load(i)
 
-        self.trash_can_x = TrashCan(self.__config["trash_x_y"], self.__config["trash_x_x"])
-        self.trash_can_y = TrashCan(self.__config["trash_y_y"], self.__config["trash_y_x"])
+        self.trash_can_x = TrashCan(self.__config["trash_x_y"], self.__config["trash_x_x"], "X")
+        self.trash_can_y = TrashCan(self.__config["trash_y_y"], self.__config["trash_y_x"], "Y")
         self.incinerator_x = self.__config["incinerator_x"]
         self.incinerator_y = self.__config["incinerator_y"]
         self.trash_number = self.__config["trash_number"]
@@ -34,14 +34,14 @@ class Board:
                     self.tab[i][j] = "%"
         self.tab[self.robot1.y][self.robot1.x] = "1"
         self.tab[self.robot2.y][self.robot2.x] = "2"
-        self.tab[self.trash_can_x.y][self.trash_can_x.x] = "X"
-        self.tab[self.trash_can_y.y][self.trash_can_y.x] = "Y"
+        self.tab[self.trash_can_x.y][self.trash_can_x.x] = self.trash_can_x
+        self.tab[self.trash_can_y.y][self.trash_can_y.x] = self.trash_can_y
         self.tab[self.incinerator_y][self.incinerator_x] = "I"
         self.tab[self.recycler_y][self.recycler_x] = "R"
         trash_list = self.trash_gen()
 
         for i in trash_list:
-            self.tab[i.y][i.x] = i.kind
+            self.tab[i.y][i.x] = i
 
         return self.tab
 
@@ -84,7 +84,7 @@ class Board:
             print("old: y:{},x:{}".format(old_y, old_x))
             print("new: y:{},x:{}".format(y, x))
         else:
-            print("MOVIMENTO INVALIDO")
+            print("MOVIMENTO INVALIDO, BEIRADA DA TERRA PLANA")
 
     def show(self):
         for i in range(self.size_y):
