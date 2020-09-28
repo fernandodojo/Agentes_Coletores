@@ -72,25 +72,25 @@ class Board:
     def move(self, direction):
         if direction == 4:
             movimento = self.robot1.x - 1
-            if not (movimento <= 0 or movimento >= self.size_x - 1):
+            if self.tab[self.robot1.y][movimento] == " " or self.tab[self.robot1.y][movimento] in self.trash_list:
                 self.robot1.x -= 1
             return self.robot1.y, self.robot1.x
 
         if direction == 8:
-            movimento = self.robot1.y - 1                
-            if not (movimento <= 0 or movimento >= self.size_y - 1):
+            movimento = self.robot1.y - 1
+            if self.tab[movimento][self.robot1.x] == " " or self.tab[movimento][self.robot1.x] in self.trash_list:                
                 self.robot1.y -= 1
             return self.robot1.y, self.robot1.x
 
         if direction == 6:
             movimento = self.robot1.x + 1                
-            if not (movimento <= 0 or movimento >= self.size_x - 1):
+            if self.tab[self.robot1.y][movimento] == " " or self.tab[self.robot1.y][movimento] in self.trash_list:
                 self.robot1.x += 1
             return self.robot1.y, self.robot1.x
 
         if direction == 2:
             movimento = self.robot1.y +1
-            if not (movimento <= 0 or movimento >= self.size_y - 1):
+            if self.tab[movimento][self.robot1.x] == " " or self.tab[movimento][self.robot1.x] in self.trash_list:
                 self.robot1.y += 1
             return self.robot1.y, self.robot1.x  
     
@@ -112,7 +112,7 @@ class Board:
             self.tab[old_y][old_x] = " "
             
             self.show()
-            time.sleep(0.002)
+            time.sleep(0.003)
 
 
 
