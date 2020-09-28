@@ -6,7 +6,7 @@ class Robot:
         self.name = name
         self.x = x
         self.y = y
-        self.trash = None
+        self.content = []
 
     def set(self, x, y, trash):
         self.x = x
@@ -14,20 +14,7 @@ class Robot:
         self.trash = trash
         return self
 
-    def move(self, direction):
-        if direction == 4:
-            self.x -= 1
-            return self.y, self.x
-        if direction == 8:
-            self.y -= 1
-            return self.y, self.x
-        if direction == 6:
-            self.x += 1
-            return self.y, self.x
-        if direction == 2:
-            self.y += 1
-            return self.y, self.x
-
+    
     def random_position(self):
         self.x = random.randint(1, 20)
         self.y = random.randint(1, 20)

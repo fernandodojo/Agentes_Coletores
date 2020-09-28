@@ -1,6 +1,9 @@
 import json
 from controllers.board import Board
 from controllers.robot import Robot
+from random import *
+
+
 
 
 def main():
@@ -14,7 +17,9 @@ def main():
     board.create()
     board.show()
 
-       
+    board.move_rs()
+    board.show()
+
     
 
 

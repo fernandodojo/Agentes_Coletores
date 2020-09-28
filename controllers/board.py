@@ -1,7 +1,10 @@
 import json
 from random import *
+import time
+import os
 from controllers.trash_can import TrashCan
 from controllers.trash import Trash
+
 
 
 class Board:
@@ -20,8 +23,9 @@ class Board:
         self.size_y = self.__config["size_y"]
         self.robot1 = robot1
         self.robot2 = robot2
+        self.trash_list = []
         self.tab = [[]]
-        self.trash = []
+
 
     def create(self):
         self.tab = [[" "] * self.size_x for i in range(self.size_y)]
@@ -32,8 +36,8 @@ class Board:
                     self.tab[i][j] = "%"
                 elif j == 0 or j == self.size_x - 1:
                     self.tab[i][j] = "%"
-        self.tab[self.robot1.y][self.robot1.x] = "1"
-        self.tab[self.robot2.y][self.robot2.x] = "2"
+        self.tab[self.robot1.y][self.robot1.x] = self.robot1
+        self.tab[self.robot2.y][self.robot2.x] = self.robot2
         self.tab[self.trash_can_x.y][self.trash_can_x.x] = self.trash_can_x
         self.tab[self.trash_can_y.y][self.trash_can_y.x] = self.trash_can_y
         self.tab[self.incinerator_y][self.incinerator_x] = "I"
@@ -53,9 +57,9 @@ class Board:
                 coordinates.append(rand)
 
         for i in range(len(coordinates)):
-            self.trash.append(Trash(i, coordinates[i][0], coordinates[i][1], choice(["i", "r"])))
+            self.trash_list.append(Trash(i, coordinates[i][0], coordinates[i][1], choice(["i", "r"])))
 
-        return self.trash
+        return self.trash_list
 
     def random_mov(self):
         old_x = self.robot1.x
@@ -65,30 +69,66 @@ class Board:
         self.tab[self.robot1.y][self.robot1.x] = "1"
         self.tab[old_x][old_y] = ' '
 
-    def validate_move(self, x, y):
-        if y <= 0 or y >= self.size_y - 1:
-            return False
-        elif x <= 0 or x >= self.size_x - 1:
-            return False
-        return True
+    def move(self, direction):
+        if direction == 4:
+            movimento = self.robot1.x - 1
+            if not (movimento <= 0 or movimento >= self.size_x - 1):
+                self.robot1.x -= 1
+            return self.robot1.y, self.robot1.x
 
-    def move_robot1(self, direction):
-        old_x = self.robot1.x
-        old_y = self.robot1.y
+        if direction == 8:
+            movimento = self.robot1.y - 1                
+            if not (movimento <= 0 or movimento >= self.size_y - 1):
+                self.robot1.y -= 1
+            return self.robot1.y, self.robot1.x
 
-        y, x = self.robot1.move(direction)
-        if self.validate_move(x, y):
-            self.tab[y][x] = "1"
+        if direction == 6:
+            movimento = self.robot1.x + 1                
+            if not (movimento <= 0 or movimento >= self.size_x - 1):
+                self.robot1.x += 1
+            return self.robot1.y, self.robot1.x
+
+        if direction == 2:
+            movimento = self.robot1.y +1
+            if not (movimento <= 0 or movimento >= self.size_y - 1):
+                self.robot1.y += 1
+            return self.robot1.y, self.robot1.x  
+    
+    def move_rs(self):
+
+        while self.trash_list:            	                
+            direction = choice([2, 4, 6, 8])
+            
+            old_x = self.robot1.x
+            old_y = self.robot1.y
+
+            y, x = self.move(direction)            
+            
+            if self.tab[y][x] in self.trash_list:
+                lixo = self.tab[y][x]
+                self.robot1.content.append(lixo)
+                self.trash_list.remove(lixo)
+            self.tab[y][x] = self.robot1
             self.tab[old_y][old_x] = " "
-            print("MOVIMENTO VALIDO")
-            print("old: y:{},x:{}".format(old_y, old_x))
-            print("new: y:{},x:{}".format(y, x))
-        else:
-            print("MOVIMENTO INVALIDO, BEIRADA DA TERRA PLANA")
+            
+            self.show()
+            time.sleep(0.002)
 
+
+
+        
     def show(self):
+              
+        clear = lambda: os.system('clear')
+        clear()
         for i in range(self.size_y):
             print("\n", end="")
             for j in range(self.size_x):
                 print(self.tab[i][j], end="")
+        
         print("\n")
+        print("R1 y:{},x:{}, LIXO:{}".format(self.robot1.y, self.robot1.x, len(self.trash_list)))
+        print(" ")
+        
+
+	    
