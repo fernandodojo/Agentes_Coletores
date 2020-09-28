@@ -17,7 +17,7 @@ def main():
     board.create()
     board.show()
 
-    board.move_rs()
+    board.reativo_simples_lixo()
     board.show()
 
     

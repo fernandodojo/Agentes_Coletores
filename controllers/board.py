@@ -61,40 +61,89 @@ class Board:
 
         return self.trash_list
 
-    def random_mov(self):
-        old_x = self.robot1.x
-        old_y = self.robot1.y
-
-        self.robot1.random_position()
-        self.tab[self.robot1.y][self.robot1.x] = "1"
-        self.tab[old_x][old_y] = ' '
-
-    def move(self, direction):
+    def busca_lixo(self, direction):
         if direction == 4:
             movimento = self.robot1.x - 1
+
             if self.tab[self.robot1.y][movimento] == " " or self.tab[self.robot1.y][movimento] in self.trash_list:
                 self.robot1.x -= 1
+
+            return self.robot1.y, self.robot1.x
+
+        if direction == 6:
+            movimento = self.robot1.x + 1
+
+            if self.tab[self.robot1.y][movimento] == " " or self.tab[self.robot1.y][movimento] in self.trash_list:
+                self.robot1.x += 1
+
             return self.robot1.y, self.robot1.x
 
         if direction == 8:
             movimento = self.robot1.y - 1
+
             if self.tab[movimento][self.robot1.x] == " " or self.tab[movimento][self.robot1.x] in self.trash_list:                
                 self.robot1.y -= 1
-            return self.robot1.y, self.robot1.x
 
-        if direction == 6:
-            movimento = self.robot1.x + 1                
-            if self.tab[self.robot1.y][movimento] == " " or self.tab[self.robot1.y][movimento] in self.trash_list:
-                self.robot1.x += 1
             return self.robot1.y, self.robot1.x
 
         if direction == 2:
             movimento = self.robot1.y +1
+            
             if self.tab[movimento][self.robot1.x] == " " or self.tab[movimento][self.robot1.x] in self.trash_list:
                 self.robot1.y += 1
-            return self.robot1.y, self.robot1.x  
+            return self.robot1.y, self.robot1.x
+
+
+    def busca_lixeira(self, direction):
+        lixeira = " "
+        if direction == 4:
+            movimento = self.robot1.x - 1
+
+            if self.tab[self.robot1.y][movimento] == self.trash_can_x:
+                lixeira = self.trash_can_x     
+            elif self.tab[self.robot1.y][movimento] == self.trash_can_y:
+                lixeira = self.trash_can_y                
+            elif self.tab[self.robot1.y][movimento] == " ":
+                self.robot1.x -= 1
+
+            return self.robot1.y, self.robot1.x, lixeira
+
+        if direction == 6:
+            movimento = self.robot1.x + 1
+
+            if self.tab[self.robot1.y][movimento] == self.trash_can_x:
+                lixeira = self.trash_can_x     
+            elif self.tab[self.robot1.y][movimento] == self.trash_can_y:
+                lixeira = self.trash_can_y
+            elif self.tab[self.robot1.y][movimento] == " ":
+                self.robot1.x += 1
+
+            return self.robot1.y, self.robot1.x, lixeira
+
+        if direction == 8:
+            movimento = self.robot1.y - 1
+
+            if self.tab[movimento][self.robot1.x] == self.trash_can_x:
+                lixeira =  self.trash_can_x
+            elif self.tab[movimento][self.robot1.x] == self.trash_can_y:
+                lixeira = self.trash_can_y
+            elif self.tab[movimento][self.robot1.x] == " ":                
+                self.robot1.y -= 1
+
+            return self.robot1.y, self.robot1.x, lixeira        
+
+        if direction == 2:
+            movimento = self.robot1.y +1
+            
+            if self.tab[movimento][self.robot1.x] == self.trash_can_x:
+                lixeira =  self.trash_can_x
+            elif self.tab[movimento][self.robot1.x] == self.trash_can_y:
+                lixeira = self.trash_can_y
+            elif self.tab[movimento][self.robot1.x] == " ":
+                self.robot1.y += 1
+            return self.robot1.y, self.robot1.x, lixeira  
     
-    def move_rs(self):
+    def reativo_simples_lixo(self):
 
         while self.trash_list:            	                
             direction = choice([2, 4, 6, 8])
@@ -102,19 +151,40 @@ class Board:
             old_x = self.robot1.x
             old_y = self.robot1.y
 
-            y, x = self.move(direction)            
+            y, x = self.busca_lixo(direction)            
             
-            if self.tab[y][x] in self.trash_list:
-                lixo = self.tab[y][x]
-                self.robot1.content.append(lixo)
-                self.trash_list.remove(lixo)
+            if not self.robot1.content:
+                if self.tab[y][x] in self.trash_list:
+                    lixo = self.tab[y][x]
+                    self.robot1.content.append(lixo)
+                    self.trash_list.remove(lixo)
+                self.tab[y][x] = self.robot1
+                self.tab[old_y][old_x] = " "
+            else:
+                self.reativo_simples_lixeira()
+            
+            self.show()
+            time.sleep(0.01)
+
+    def reativo_simples_lixeira(self):
+
+        while self.robot1.content:             
+            direction = choice([2, 4, 6, 8])
+            
+            old_x = self.robot1.x
+            old_y = self.robot1.y
+
+            y, x, lixeira = self.busca_lixeira(direction)            
+            
+            if lixeira !=" ":
+                lixo = self.robot1.content[-1]
+                lixeira.content.append(lixo)
+                self.robot1.content.pop()
             self.tab[y][x] = self.robot1
             self.tab[old_y][old_x] = " "
             
             self.show()
-            time.sleep(0.003)
-
-
+            time.sleep(0.01)
 
         
     def show(self):
@@ -127,7 +197,7 @@ class Board:
                 print(self.tab[i][j], end="")
         
         print("\n")
-        print("R1 y:{},x:{}, LIXO:{}".format(self.robot1.y, self.robot1.x, len(self.trash_list)))
+        print("R1 y:{},x:{}, LIXO:{}, LIXEIRA_X: {}, LIXEIRA_Y:{}".format(self.robot1.y, self.robot1.x, len(self.trash_list), len(self.trash_can_x.content), len(self.trash_can_y.content)))
         print(" ")
         
 
