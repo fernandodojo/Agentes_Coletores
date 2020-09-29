@@ -18,7 +18,9 @@ def main():
     board.show()
 
     start = time.time()
-    board.reativo_simples_lixo()
+    #board.reativo_simples_lixo()
+    #board.reativo_simples_lixeira_r2()
+    board.reativo_simples()
     end = time.time()
     board.show()
     print(f"Runtime of the program is {end - start}")

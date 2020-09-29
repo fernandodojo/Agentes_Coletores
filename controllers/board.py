@@ -4,6 +4,8 @@ import time
 import os
 from controllers.trash_can import TrashCan
 from controllers.trash import Trash
+from controllers.incinerator import Incinerator
+from controllers.recycler import Recycler
 
 
 class Board:
@@ -15,17 +17,17 @@ class Board:
                                     self.__config["trash_x_x"], "X")
         self.trash_can_y = TrashCan(self.__config["trash_y_y"],
                                     self.__config["trash_y_x"], "Y")
-        self.incinerator_x = self.__config["incinerator_x"]
-        self.incinerator_y = self.__config["incinerator_y"]
+        self.incinerator = Incinerator(self.__config["incinerator_y"], self.__config["incinerator_x"], "I")
+        self.recycler = Recycler(self.__config["recycler_y"], self.__config["recycler_x"], "R")        
         self.trash_number = self.__config["trash_number"]
-        self.recycler_x = self.__config["recycler_x"]
-        self.recycler_y = self.__config["recycler_y"]
         self.size_x = self.__config["size_x"]
         self.size_y = self.__config["size_y"]
         self.robot1 = robot1
         self.robot2 = robot2
         self.trash_list = []
         self.tab = [[]]
+        self.qtd_i = 0
+        self.qtd_r = 0
 
     def create(self):
         self.tab = [[" "] * self.size_x for i in range(self.size_y)]
@@ -40,12 +42,27 @@ class Board:
         self.tab[self.robot2.y][self.robot2.x] = self.robot2
         self.tab[self.trash_can_x.y][self.trash_can_x.x] = self.trash_can_x
         self.tab[self.trash_can_y.y][self.trash_can_y.x] = self.trash_can_y
-        self.tab[self.incinerator_y][self.incinerator_x] = "I"
-        self.tab[self.recycler_y][self.recycler_x] = "R"
+        self.tab[self.incinerator.y][self.incinerator.x] = self.incinerator
+        self.tab[self.recycler.y][self.recycler.x] = self.recycler
         trash_list = self.trash_gen()
 
         for i in trash_list:
             self.tab[i.y][i.x] = i
+
+        
+        """for i in range(len(self.trash_list)):
+            lixo = self.trash_list[i]
+            if i < 10:
+                self.trash_can_x.content.append(lixo)
+            elif i >= 10:
+                self.trash_can_y.content.append(lixo)
+
+        self.trash_list = []
+
+        for i in self.trash_list:
+            self.robot2.content.append(i)
+
+        self.trash_list = []"""
 
         return self.tab
 
@@ -60,6 +77,13 @@ class Board:
             self.trash_list.append(
                 Trash(i, coordinates[i][0], coordinates[i][1],
                       choice(["i", "r"])))
+
+        
+        for i in self.trash_list:
+            if i.kind == "i":
+                self.qtd_i +=1
+            else:
+                self.qtd_r +=1
 
         return self.trash_list
 
@@ -149,7 +173,232 @@ class Board:
                 self.robot1.y += 1
             return self.robot1.y, self.robot1.x, lixeira
 
-    def reativo_simples_lixo(self):
+    def busca_lixeira_r2(self, direction):
+        lixeira = False
+
+        if direction == 4:
+            movimento = self.robot2.x - 1
+
+            if self.tab[self.robot2.y][movimento] == self.trash_can_x:
+                lixeira = self.trash_can_x
+            elif self.tab[self.robot2.y][movimento] == self.trash_can_y:
+                lixeira = self.trash_can_y
+            elif self.tab[self.robot2.y][movimento] == " ":
+                self.robot2.x -= 1
+
+            return self.robot2.y, self.robot2.x, lixeira
+
+        if direction == 6:
+            movimento = self.robot2.x + 1
+
+            if self.tab[self.robot2.y][movimento] == self.trash_can_x:
+                lixeira = self.trash_can_x
+            elif self.tab[self.robot2.y][movimento] == self.trash_can_y:
+                lixeira = self.trash_can_y
+            elif self.tab[self.robot2.y][movimento] == " ":
+                self.robot2.x += 1
+
+            return self.robot2.y, self.robot2.x, lixeira
+
+        if direction == 8:
+            movimento = self.robot2.y - 1
+
+            if self.tab[movimento][self.robot2.x] == self.trash_can_x:
+                lixeira = self.trash_can_x
+            elif self.tab[movimento][self.robot2.x] == self.trash_can_y:
+                lixeira = self.trash_can_y
+            elif self.tab[movimento][self.robot2.x] == " ":
+                self.robot2.y -= 1
+
+            return self.robot2.y, self.robot2.x, lixeira
+
+        if direction == 2:
+            movimento = self.robot2.y + 1
+
+            if self.tab[movimento][self.robot2.x] == self.trash_can_x:
+                lixeira = self.trash_can_x
+            elif self.tab[movimento][self.robot2.x] == self.trash_can_y:
+                lixeira = self.trash_can_y
+            elif self.tab[movimento][self.robot2.x] == " ":
+                self.robot2.y += 1
+            return self.robot2.y, self.robot2.x, lixeira
+
+    def busca_incinerador(self, direction):
+        incinerador = False
+
+        if direction == 4:
+            movimento = self.robot2.x - 1
+
+            if self.tab[self.robot2.y][movimento] == self.incinerator:
+                incinerador = self.incinerator
+            elif self.tab[self.robot2.y][movimento] == " ":
+                self.robot2.x -= 1
+
+            return self.robot2.y, self.robot2.x, incinerador
+
+        if direction == 6:
+            movimento = self.robot2.x + 1
+
+            if self.tab[self.robot2.y][movimento] == self.incinerator:
+                incinerador = self.incinerator
+            elif self.tab[self.robot2.y][movimento] == " ":
+                self.robot2.x += 1
+
+            return self.robot2.y, self.robot2.x, incinerador
+
+        if direction == 8:
+            movimento = self.robot2.y - 1
+
+            if self.tab[movimento][self.robot2.x] == self.incinerator:
+                incinerador = self.incinerator
+            elif self.tab[movimento][self.robot2.x] == " ":
+                self.robot2.y -= 1
+
+            return self.robot2.y, self.robot2.x, incinerador
+
+        if direction == 2:
+            movimento = self.robot2.y + 1
+
+            if self.tab[movimento][self.robot2.x] == self.incinerator:
+                incinerador = self.incinerator
+            elif self.tab[movimento][self.robot2.x] == " ":
+                self.robot2.y += 1
+            return self.robot2.y, self.robot2.x, incinerador
+
+    def busca_reciclador(self, direction):
+        reciclador = False
+
+        if direction == 4:
+            movimento = self.robot2.x - 1
+
+            if self.tab[self.robot2.y][movimento] == self.recycler:
+                reciclador = self.recycler
+            elif self.tab[self.robot2.y][movimento] == " ":
+                self.robot2.x -= 1
+
+            return self.robot2.y, self.robot2.x, reciclador
+
+        if direction == 6:
+            movimento = self.robot2.x + 1
+
+            if self.tab[self.robot2.y][movimento] == self.recycler:
+                reciclador = self.recycler
+            elif self.tab[self.robot2.y][movimento] == " ":
+                self.robot2.x += 1
+
+            return self.robot2.y, self.robot2.x, reciclador
+
+        if direction == 8:
+            movimento = self.robot2.y - 1
+
+            if self.tab[movimento][self.robot2.x] == self.recycler:
+                reciclador = self.recycler
+            elif self.tab[movimento][self.robot2.x] == " ":
+                self.robot2.y -= 1
+
+            return self.robot2.y, self.robot2.x, reciclador
+
+        if direction == 2:
+            movimento = self.robot2.y + 1
+
+            if self.tab[movimento][self.robot2.x] == self.recycler:
+                reciclador = self.recycler
+            elif self.tab[movimento][self.robot2.x] == " ":
+                self.robot2.y += 1
+            return self.robot2.y, self.robot2.x, reciclador
+
+    def reativo_simples(self):
+
+        while self.trash_list or self.robot1.content or self.trash_can_x.content or self.trash_can_y.content or self.robot2.content:
+
+            if not self.robot1.content:
+                direction = choice([2, 4, 6, 8])
+
+                old_x = self.robot1.x
+                old_y = self.robot1.y
+
+                y, x = self.busca_lixo(direction)
+            
+                if self.tab[y][x] in self.trash_list:
+                    lixo = self.tab[y][x]
+                    self.robot1.content.append(lixo)
+                    self.trash_list.remove(lixo)
+                self.tab[y][x] = self.robot1
+                self.tab[old_y][old_x] = " "
+                self.show()
+
+            elif self.robot1.content:
+                direction = choice([2, 4, 6, 8])
+
+                old_x = self.robot1.x
+                old_y = self.robot1.y
+
+                y, x, lixeira = self.busca_lixeira(direction)
+
+                if lixeira:
+                    lixo = self.robot1.content[0]
+                    lixeira.content.append(lixo)
+                    self.robot1.content.remove(lixo)
+                self.tab[y][x] = self.robot1
+                self.tab[old_y][old_x] = " "
+                self.show()
+            
+            if not self.robot2.content:
+                direction = choice([2, 4, 6, 8])
+
+                old_x = self.robot2.x
+                old_y = self.robot2.y
+
+                y, x, lixeira = self.busca_lixeira_r2(direction)
+
+                if lixeira:
+                    if lixeira.content:
+                        lixo = lixeira.content[0]
+                        self.robot2.content.append(lixo)
+                        lixeira.content.remove(lixo)
+                self.tab[y][x] = self.robot2
+                self.tab[old_y][old_x] = " "
+                self.show()            
+
+            if self.robot2.content and self.robot2.content[0].kind == "i":
+                direction = choice([2, 4, 6, 8])
+
+                old_x = self.robot2.x
+                old_y = self.robot2.y
+
+                y, x, incinerador = self.busca_incinerador(direction)
+
+                if incinerador:
+                    lixo = self.robot2.content[0]
+                    self.incinerator.content.append(lixo)
+                    self.robot2.content.remove(lixo)
+                    self.qtd_i -=1
+                self.tab[y][x] = self.robot2
+                self.tab[old_y][old_x] = " "          
+                self.show()
+
+            if self.robot2.content and self.robot2.content[0].kind == "r":
+  
+                direction = choice([2, 4, 6, 8])
+
+                old_x = self.robot2.x
+                old_y = self.robot2.y
+
+                y, x, reciclador = self.busca_reciclador(direction)
+
+                if reciclador:
+                    lixo = self.robot2.content[0]
+                    self.recycler.content.append(lixo)
+                    self.robot2.content.remove(lixo)
+                    self.qtd_r -=1
+                self.tab[y][x] = self.robot2
+                self.tab[old_y][old_x] = " "            
+                self.show()
+            
+            self.show()
+            #time.sleep(0.001)    
+    
+    """def reativo_simples_lixo(self):
 
         while self.trash_list or self.robot1.content:
             if not self.robot1.content:
@@ -169,7 +418,7 @@ class Board:
                 self.reativo_simples_lixeira()
 
             self.show()
-            #time.sleep(0.01)
+            time.sleep(0.01)"""
 
     def reativo_simples_lixeira(self):
         #self.robot1.content = self.trash_list
@@ -190,7 +439,77 @@ class Board:
             self.tab[old_y][old_x] = " "
 
             self.show()
-            #time.sleep(0.01)
+            #time.sleep(0.001)
+
+    """def reativo_simples_lixeira_r2(self):
+        #self.robot1.content = self.trash_list
+        while self.trash_can_x.content or self.trash_can_y.content or self.robot2.content:
+
+            if not self.robot2.content:
+                direction = choice([2, 4, 6, 8])
+
+                old_x = self.robot2.x
+                old_y = self.robot2.y
+
+                y, x, lixeira = self.busca_lixeira_r2(direction)
+
+                if lixeira:
+                    if lixeira.content:
+                        lixo = lixeira.content[0]
+                        self.robot2.content.append(lixo)
+                        lixeira.content.remove(lixo)
+                self.tab[y][x] = self.robot2
+                self.tab[old_y][old_x] = " "
+            else:
+                self.reativo_simples_incinerador_r2()                    
+                self.reativo_simples_reciclador_r2()                   
+
+            self.show()
+            time.sleep(0.01)""" 
+
+    def reativo_simples_incinerador_r2(self):
+        #self.robot1.content = self.trash_list
+        while self.robot2.content and self.robot2.content[0].kind == "i":
+            direction = choice([2, 4, 6, 8])
+
+            old_x = self.robot2.x
+            old_y = self.robot2.y
+
+            y, x, incinerador = self.busca_incinerador(direction)
+
+            if incinerador:
+                lixo = self.robot2.content[0]
+                self.incinerator.content.append(lixo)
+                self.robot2.content.remove(lixo)
+                self.qtd_i -=1
+            self.tab[y][x] = self.robot2
+            self.tab[old_y][old_x] = " "            
+
+            self.show()
+            #time.sleep(.001)
+
+    def reativo_simples_reciclador_r2(self):
+        
+        while self.robot2.content and self.robot2.content[0].kind == "r":
+            
+            direction = choice([2, 4, 6, 8])
+
+            old_x = self.robot2.x
+            old_y = self.robot2.y
+
+            y, x, reciclador = self.busca_reciclador(direction)
+
+            if reciclador:
+                lixo = self.robot2.content[0]
+                self.recycler.content.append(lixo)
+                self.robot2.content.remove(lixo)
+                self.qtd_r -=1
+            self.tab[y][x] = self.robot2
+            self.tab[old_y][old_x] = " "            
+
+            self.show()
+            #time.sleep(.001)
+
 
     def show(self):
 
@@ -206,4 +525,14 @@ class Board:
               format(self.robot1.y, self.robot1.x, len(self.trash_list),
                      len(self.trash_can_x.content),
                      len(self.trash_can_y.content), len(self.robot1.content)))
+        print(" ")
+        tipo = 0
+        if self.robot2.content:
+            tipo = self.robot2.content[0].kind
+        
+            
+        print("R2 y:{},x:{}, LIXO:{}, LIXEIRA_X: {}, LIXEIRA_Y:{}, R2_CONT:{}, TIPO:{}, QTDR:{} RECICLADOR:{}, QTDI:{}, INCINERADOR:{}".
+              format(self.robot2.y, self.robot2.x, len(self.trash_list),
+                     len(self.trash_can_x.content),
+                     len(self.trash_can_y.content), len(self.robot2.content), tipo, self.qtd_r, len(self.recycler.content), self.qtd_i, len(self.incinerator.content)))
         print(" ")
