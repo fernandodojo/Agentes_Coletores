@@ -14,7 +14,6 @@ class Robot:
         self.trash = trash
         return self
 
-    
     def random_position(self):
         self.x = random.randint(1, 20)
         self.y = random.randint(1, 20)
