@@ -265,10 +265,67 @@ class Board:
                 self.robot2.y += 1
             return self.robot2.y, self.robot2.x, reciclador
 
+    def sensor_lixo(self):
+        left = self.robot1.x - 1
+        if (self.tab[self.robot1.y][left] in self.trash_list):
+            return 4
+
+        right = self.robot1.x + 1
+        if (self.tab[self.robot1.y][right] in self.trash_list):
+            return 6
+
+        up = self.robot1.y - 1
+        if (self.tab[up][self.robot1.x] in self.trash_list):
+            return 8
+
+        down = self.robot1.y + 1
+        if (self.tab[down][self.robot1.x] in self.trash_list):
+            return 2
+
+        return choice([2, 4, 6, 8])
+
+    def sensor_lixeira(self):
+        left = self.robot1.x - 1
+        if (self.tab[self.robot1.y][left] == self.trash_can_x) or (self.tab[self.robot1.y][left] == self.trash_can_y):
+            return 4
+
+        right = self.robot1.x + 1
+        if (self.tab[self.robot1.y][right] == self.trash_can_x) or (self.tab[self.robot1.y][right] == self.trash_can_y):
+            return 6
+
+        up = self.robot1.y - 1
+        if (self.tab[up][self.robot1.x] == self.trash_can_x) or (self.tab[up][self.robot1.x] == self.trash_can_y):
+            return 8
+
+        down = self.robot1.y + 1
+        if (self.tab[down][self.robot1.x] == self.trash_can_x) or (self.tab[down][self.robot1.x] == self.trash_can_y):
+            return 2
+
+        return choice([2, 4, 6, 8])
+
+    def sensor_inci_recy(self):
+        left = self.robot1.x - 1
+        if (self.tab[self.robot1.y][left] == self.incinerator) or (self.tab[self.robot1.y][left] == self.recycler):
+            return 4
+
+        right = self.robot1.x + 1
+        if (self.tab[self.robot1.y][right] == self.incinerator) or (self.tab[self.robot1.y][right] == self.recycler):
+            return 6
+
+        up = self.robot1.y - 1
+        if (self.tab[up][self.robot1.x] == self.incinerator) or (self.tab[up][self.robot1.x] == self.recycler):
+            return 8
+
+        down = self.robot1.y + 1
+        if (self.tab[down][self.robot1.x] == self.incinerator) or (self.tab[down][self.robot1.x] == self.recycler):
+            return 2
+
+        return choice([2, 4, 6, 8])
+
     def reativo_simples(self):
         while self.trash_list or self.robot1.content or self.trash_can_x.content or self.trash_can_y.content or self.robot2.content:
             if not self.robot1.content and self.trash_list:
-                direction = choice([2, 4, 6, 8])
+                direction = self.sensor_lixo()
 
                 old_x = self.robot1.x
                 old_y = self.robot1.y
@@ -283,7 +340,7 @@ class Board:
                 self.show()
 
             if self.robot1.content:
-                direction = choice([2, 4, 6, 8])
+                direction = self.sensor_lixeira()
 
                 old_x = self.robot1.x
                 old_y = self.robot1.y
@@ -294,12 +351,12 @@ class Board:
                     lixo = self.robot1.content[0]
                     lixeira.content.append(lixo)
                     self.robot1.content.remove(lixo)
-                self.tab[y][x] = self.robot1
                 self.tab[old_y][old_x] = " "
+                self.tab[y][x] = self.robot1
                 self.show()
 
             if not self.robot2.content and (self.trash_can_x or self.trash_can_y):
-                direction = choice([2, 4, 6, 8])
+                direction = self.sensor_lixeira()
 
                 old_x = self.robot2.x
                 old_y = self.robot2.y
@@ -316,7 +373,7 @@ class Board:
                 self.show()
 
             if self.robot2.content and self.robot2.content[0].kind == "i":
-                direction = choice([2, 4, 6, 8])
+                direction = self.sensor_inci_recy()
 
                 old_x = self.robot2.x
                 old_y = self.robot2.y
@@ -333,8 +390,7 @@ class Board:
                 self.show()
 
             if self.robot2.content and self.robot2.content[0].kind == "r":
-
-                direction = choice([2, 4, 6, 8])
+                direction = self.sensor_inci_recy()
 
                 old_x = self.robot2.x
                 old_y = self.robot2.y
@@ -351,7 +407,7 @@ class Board:
                 self.show()
 
             # self.show()
-            time.sleep(0.5)
+            time.sleep(0.001)
 
     def show(self):
 
