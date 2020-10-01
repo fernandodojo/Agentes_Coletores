@@ -7,6 +7,11 @@ class Robot:
         self.x = x
         self.y = y
         self.content = []
+        self.pilha_lixo = []
+        self.pilha_lixeira = []
+        self.pilha_lixo_dir = []
+        self.pilha_lixeira_dir = []
+
 
     def set(self, x, y, trash):
         self.x = x
