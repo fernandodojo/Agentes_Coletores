@@ -208,55 +208,45 @@ class Board:
                 robot.y += 1
             return robot.y, robot.x, lixeira
 
-    def busca_lixeira2(self, robot, direction):
+    def busca_lixeira_dir(self, robot):
         lixeira = False
 
-        if direction == 4:
-            movimento = robot.x - 1
+        left = self.robot1.x - 1
+        if (self.tab[self.robot1.y][left] == self.trash_can_x):
+            lixeira = self.trash_can_x
+            return robot.y, left, lixeira, 4
+        return robot.y, robot.x, lixeira, 4
 
-            if self.tab[robot.y][movimento] == self.trash_can_x:
-                lixeira = self.trash_can_x
-            elif self.tab[robot.y][movimento] == self.trash_can_y:
-                lixeira = self.trash_can_y
-            elif self.tab[robot.y][movimento] == " ":
-                robot.x -= 1
+        right = self.robot1.x + 1
+        if (self.tab[self.robot1.y][right] == self.trash_can_y):
+            lixeira = self.trash_can_x
+            return robot.y, right, lixeira, 6
+        return robot.y, robot.x, lixeira, 6
 
-            return robot.y, robot.x, lixeira
+        up = self.robot1.y - 1
+        if (self.tab[up][self.robot1.x] == self.trash_can_x):
+            lixeira = self.trash_can_x
+            return up, robot.x, lixeira, 8
+        return robot.y, robot.x, lixeira, 8
 
-        if direction == 6:
-            movimento = robot.x + 1
+        up = self.robot1.y - 1
+        if (self.tab[up][self.robot1.x] == self.trash_can_y):
+            lixeira = self.trash_can_y
+            return up, robot.x, lixeira, 8
+        return robot.y, robot.x, lixeira, 8
 
-            if self.tab[robot.y][movimento] == self.trash_can_x:
-                lixeira = self.trash_can_x
-            elif self.tab[robot.y][movimento] == self.trash_can_y:
-                lixeira = self.trash_can_y
-            elif self.tab[robot.y][movimento] == " ":
-                robot.x += 1
+        down = self.robot1.y + 1
+        if (self.tab[down][self.robot1.x] == self.trash_can_x):
+            lixeira = self.trash_can_x
+            return robot.y, robot.x, lixeira, 2
+        return robot.y, robot.x, lixeira, 2
 
-            return robot.y, robot.x, lixeira
+        down = self.robot1.y + 1
+        if (self.tab[down][self.robot1.x] == self.trash_can_y):
+            lixeira = self.trash_can_y
+            return robot.y, robot.x, lixeira, 2
+        return robot.y, robot.x, lixeira, 2
 
-        if direction == 8:
-            movimento = robot.y - 1
-
-            if self.tab[movimento][robot.x] == self.trash_can_x:
-                lixeira = self.trash_can_x
-            elif self.tab[movimento][robot.x] == self.trash_can_y:
-                lixeira = self.trash_can_y
-            elif self.tab[movimento][robot.x] == " ":
-                robot.y -= 1
-
-            return robot.y, robot.x, lixeira
-
-        if direction == 2:
-            movimento = robot.y + 1
-
-            if self.tab[movimento][robot.x] == self.trash_can_x:
-                lixeira = self.trash_can_x
-            elif self.tab[movimento][robot.x] == self.trash_can_y:
-                lixeira = self.trash_can_y
-            elif self.tab[movimento][robot.x] == " ":
-                robot.y += 1
-            return robot.y, robot.x, lixeira
 
     def busca_incinerador(self, direction):
         incinerador = False
@@ -362,7 +352,7 @@ class Board:
         return choice([2, 4, 6, 8])
 
     def sensor_lixo2(self):
-        if self.robot1.pilha_lixo:
+        if self.robot1.pilha_lixo and self.robot1.pilha_lixo_dir:
             return self.robot1.pilha_lixo_dir.pop()
 
         left = self.robot1.x - 1
@@ -383,7 +373,7 @@ class Board:
 
         return choice([2, 4, 6, 8])
 
-    def sensor_lixeira2(self):
+    def sensor_lixeira(self):
         left = self.robot1.x - 1
         if (self.tab[self.robot1.y][left] == self.trash_can_x):
             return 4
@@ -402,7 +392,10 @@ class Board:
 
         return choice([2, 4, 6, 8])
 
-    def sensor_lixeira(self):
+    def sensor_lixeira2(self):
+        if self.robot1.pilha_lixeira and self.robot1.pilha_lixeira_dir:
+            return self.robot1.pilha_lixeira_dir.pop()
+
         left = self.robot1.x - 1
         if (self.tab[self.robot1.y][left] == self.trash_can_x):
             return 4
@@ -467,8 +460,7 @@ class Board:
             if not self.robot1.content and self.trash_list:
                 direction = self.sensor_lixo2()
 
-                """passo = self.sensor_lixeira()
-                lixeira_y, lixeira_x, lixeira_lixeira = self.busca_lixeira(passo)
+                lixeira_y, lixeira_x, lixeira_lixeira, passo = self.busca_lixeira_dir(self.robot1)
 
                 if direction == 4:
                     passo = 6
@@ -479,9 +471,9 @@ class Board:
                 else:
                     passo = 8
 
-                self.robot1.pilha_lixeira.append(passo)
-                if lixeira_lixeira and (lixeira_lixeira not in self.robot1.pilha_lixo_dir):
-                    self.robot1.pilha_lixo_dir.append(lixo_lixo)"""
+                self.robot1.pilha_lixeira_dir.append(passo)
+                if lixeira_lixeira and (lixeira_lixeira not in self.robot1.pilha_lixeira):
+                    self.robot1.pilha_lixeira.append(lixeira_lixeira)
 
                 old_x = self.robot1.x
                 old_y = self.robot1.y
@@ -489,6 +481,8 @@ class Board:
                 y, x, lixo = self.busca_lixo(direction)
 
                 if lixo:
+                    """if lixeira_lixeira:
+                        self.robot1.pilha_lixeira.remove(lixeira_lixeira)"""
                     self.robot1.content.append(lixo)
                     self.trash_list.remove(lixo)
                 self.tab[old_y][old_x] = " "
@@ -497,7 +491,7 @@ class Board:
                 self.show()
 
             if self.robot1.content:
-                direction = self.sensor_lixeira()
+                direction = self.sensor_lixeira2()
 
                 #passo = self.sensor_lixo()
                 lixo_y, lixo_x, lixo_lixo, passo = self.busca_lixo_dir()
@@ -608,5 +602,8 @@ class Board:
                      len(self.trash_can_x.content),
                      len(self.trash_can_y.content), len(self.robot2.content), tipo, self.qtd_r, len(self.recycler.content), self.qtd_i, len(self.incinerator.content)))
         print(" ")
-        print("PILHA_LIXO:{}".format(self.robot1.pilha_lixo))
-        print("PILHA_LIXO_DIR:{}".format(self.robot1.pilha_lixo_dir))
+        #print("PILHA_LIXO:{}".format(self.robot1.pilha_lixo))
+        #print("PILHA_LIXO_DIR:{}".format(self.robot1.pilha_lixo_dir))
+
+        print("PILHA_LIXEIRA:{}".format(self.robot1.pilha_lixeira))
+        print("PILHA_LIXEIRA_DIR:{}".format(self.robot1.pilha_lixeira_dir))
