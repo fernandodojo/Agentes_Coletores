@@ -10,8 +10,11 @@ class Robot:
         self.pilha_lixo = []
         self.pilha_lixeira = []
         self.pilha_lixo_dir = []
+        self.pilha_reciclador = []
         self.pilha_lixeira_dir = []
-
+        self.pilha_incinerador = []
+        self.pilha_reciclador_dir = []
+        self.pilha_incinerador_dir = []
 
     def set(self, x, y, trash):
         self.x = x
