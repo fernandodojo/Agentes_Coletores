@@ -10,8 +10,12 @@
     "trash_number": 40,
     "trash_y_y": 12,
     "trash_y_x": 20,
-    "robot_1_x": 1,
-    "robot_1_y": 1,
+    "robot_1_x": 2,
+    "robot_1_y": 12,
     "robot_2_x": 20,
-    "robot_2_y": 1
+    "robot_2_y": 1,
+    "4":6,
+    "8":2,
+    "6":4,
+    "2":8
 }
