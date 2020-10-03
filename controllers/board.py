@@ -204,6 +204,8 @@ class Board:
     def direcao_lixeira_r2(self):
         if self.robot2.pilha_lixeira and self.robot2.pilha_lixeira_dir:
             return self.robot2.pilha_lixeira_dir.pop()
+        elif self.robot2.y < self.trash_can_x.y -2:
+            return choice([2, 4, 6])
         else:
             left = self.robot2.x - 1
             if (self.tab[self.robot2.y][left] == self.trash_can_x) and (self.trash_can_x.content):
@@ -214,7 +216,7 @@ class Board:
                 return 6
 
             up = self.robot2.y - 1
-            if (self.tab[up][self.robot2.x] == self.trash_can_x) and (self.trash_can_x.content) or (self.tab[up][self.robot2.x] == self.trash_can_y) and (self.trash_can_y.content):
+            if ((self.tab[up][self.robot2.x] == self.trash_can_x) and (self.trash_can_x.content) or (self.tab[up][self.robot2.x] == self.trash_can_y) and (self.trash_can_y.content)) and not (self.robot2.y < self.trash_can_x.y -2):
                 return 8
 
             down = self.robot2.y + 1
@@ -226,6 +228,8 @@ class Board:
     def direcao_reciclador(self):
         if self.robot2.pilha_reciclador and self.robot2.pilha_reciclador_dir:
             return self.robot2.pilha_reciclador_dir.pop()
+        elif self.robot2.y < self.trash_can_x.y -2:
+            return choice([2, 4, 6])
         else:
             right = self.robot2.x + 1
             if (self.tab[self.robot2.y][right] == self.recycler):
@@ -240,6 +244,8 @@ class Board:
     def direcao_incinerador(self):
         if self.robot2.pilha_incinerador and self.robot2.pilha_incinerador_dir:
             return self.robot2.pilha_incinerador_dir.pop()
+        elif self.robot2.y < self.trash_can_x.y -2:
+            return choice([2, 4, 6])
         else:
             left = self.robot2.x - 1
             if (self.tab[self.robot2.y][left] == self.incinerator):
