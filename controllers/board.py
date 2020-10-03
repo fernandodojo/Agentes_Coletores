@@ -525,7 +525,7 @@ class Board:
                 self.tab[y][x] = self.robot2
                 self.show()
             # self.show()
-            time.sleep(0.005)
+            #time.sleep(0.005)
 
     def show(self):
 
