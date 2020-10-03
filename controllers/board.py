@@ -297,21 +297,21 @@ class Board:
     def sensor_lixeira(self, robot):
         lixeira = False
 
-        left = self.robot1.x - 1
-        if isinstance(self.tab[self.robot1.y][left], TrashCan):
-            return self.tab[self.robot1.y][left]
+        left = robot.x - 1
+        if isinstance(self.tab[robot.y][left], TrashCan):
+            return self.tab[robot.y][left]
 
-        right = self.robot1.x + 1
-        if isinstance(self.tab[self.robot1.y][right], TrashCan):
-            return self.tab[self.robot1.y][right]
+        right = robot.x + 1
+        if isinstance(self.tab[robot.y][right], TrashCan):
+            return self.tab[robot.y][right]
 
-        up = self.robot1.y - 1
-        if isinstance(self.tab[up][self.robot1.x], TrashCan):
-            return self.tab[up][self.robot1.x]
+        up = robot.y - 1
+        if isinstance(self.tab[up][robot.x], TrashCan):
+            return self.tab[up][robot.x]
 
-        down = self.robot1.y + 1
-        if isinstance(self.tab[down][self.robot1.x], TrashCan):
-            return self.tab[down][self.robot1.x]
+        down = robot.y + 1
+        if isinstance(self.tab[down][robot.x], TrashCan):
+            return self.tab[down][robot.x]
 
         return lixeira
 
@@ -328,7 +328,8 @@ class Board:
                 if lixeira:
                     self.robot1.pilha_lixeira_dir = []
                     self.robot1.pilha_lixeira = []
-                    self.robot1.pilha_lixeira.append(lixeira)
+                    if lixeira not in self.robot1.pilha_lixeira:
+                        self.robot1.pilha_lixeira.append(lixeira)
                 self.robot1.pilha_lixeira_dir.append(passo)
 
                 old_x = self.robot1.x
@@ -375,22 +376,22 @@ class Board:
 
             if ((not self.robot2.content) and (self.trash_can_x.content)) or ((not self.robot2.content) and (self.trash_can_y.content)):
                 direction = self.direcao_lixeira_r2()
-
-                incinerador = self.sensor_incinerador()
-                reciclador = self.sensor_reciclador()
-
                 passo = self.__config[str(direction)]
 
+                incinerador = self.sensor_incinerador()
                 if incinerador:
                     self.robot2.pilha_incinerador_dir = []
                     self.robot2.pilha_incinerador = []
-                    self.robot2.pilha_incinerador.append(incinerador)
+                    if incinerador not in self.robot2.pilha_incinerador:
+                        self.robot2.pilha_incinerador.append(incinerador)
                 self.robot2.pilha_incinerador_dir.append(passo)
 
+                reciclador = self.sensor_reciclador()
                 if reciclador:
                     self.robot2.pilha_reciclador_dir = []
                     self.robot2.pilha_reciclador = []
-                    self.robot2.pilha_reciclador.append(reciclador)
+                    if reciclador not in self.robot2.pilha_reciclador:
+                        self.robot2.pilha_reciclador.append(reciclador)
                 self.robot2.pilha_reciclador_dir.append(passo)
 
                 old_x = self.robot2.x
@@ -410,16 +411,23 @@ class Board:
 
             if self.robot2.content and self.robot2.content[0].kind == "i":
                 direction = self.direcao_incinerador()
-
-                lixeira = self.sensor_lixeira(self.robot2)
-
                 passo = self.__config[str(direction)]
 
+                lixeira = self.sensor_lixeira(self.robot2)
                 if lixeira and lixeira.content:
                     self.robot2.pilha_lixeira_dir = []
                     self.robot2.pilha_lixeira = []
-                    self.robot2.pilha_lixeira.append(lixeira)
+                    if lixeira not in self.robot2.pilha_lixeira:
+                        self.robot2.pilha_lixeira.append(lixeira)
                 self.robot2.pilha_lixeira_dir.append(passo)
+
+                reciclador = self.sensor_reciclador()
+                if reciclador:
+                    self.robot2.pilha_reciclador_dir = []
+                    self.robot2.pilha_reciclador = []
+                    if reciclador not in self.robot2.pilha_reciclador:
+                        self.robot2.pilha_reciclador.append(reciclador)
+                self.robot2.pilha_reciclador_dir.append(passo)
 
                 old_x = self.robot2.x
                 old_y = self.robot2.y
@@ -438,16 +446,23 @@ class Board:
 
             if self.robot2.content and self.robot2.content[0].kind == "r":
                 direction = self.direcao_reciclador()
-
-                lixeira = self.sensor_lixeira(self.robot2)
-
                 passo = self.__config[str(direction)]
 
+                lixeira = self.sensor_lixeira(self.robot2)
                 if lixeira and lixeira.content:
                     self.robot2.pilha_lixeira_dir = []
                     self.robot2.pilha_lixeira = []
-                    self.robot2.pilha_lixeira.append(lixeira)
+                    if lixeira not in self.robot2.pilha_lixeira:
+                        self.robot2.pilha_lixeira.append(lixeira)
                 self.robot2.pilha_lixeira_dir.append(passo)
+
+                incinerador = self.sensor_incinerador()
+                if incinerador:
+                    self.robot2.pilha_incinerador_dir = []
+                    self.robot2.pilha_incinerador = []
+                    if incinerador not in self.robot2.pilha_incinerador:
+                        self.robot2.pilha_incinerador.append(incinerador)
+                self.robot2.pilha_incinerador_dir.append(passo)
 
                 old_x = self.robot2.x
                 old_y = self.robot2.y
@@ -464,7 +479,7 @@ class Board:
                 self.tab[y][x] = self.robot2
                 self.show()
             # self.show()
-            #time.sleep(0.5)
+            #time.sleep(0.005)
 
     def show(self):
 
