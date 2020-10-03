@@ -28,6 +28,7 @@ class Board:
         self.tab = [[]]
         self.qtd_i = 0
         self.qtd_r = 0
+        self.qtd_r_board = 0
 
     def create(self):
         self.tab = [[" "] * self.size_x for i in range(self.size_y)]
@@ -82,57 +83,95 @@ class Board:
                 self.qtd_i += 1
             else:
                 self.qtd_r += 1
+                self.qtd_r_board +=1
 
         return self.trash_list
 
     def mover_lixo(self, direction):
         lixo = False
 
-        if direction == 4:
-            movimento = self.robot1.x - 1
+        if self.qtd_r_board > 0:
+            if direction == 4:
+                movimento = self.robot1.x - 1
+                if self.tab[self.robot1.y][movimento] in self.trash_list:
+                    if self.tab[self.robot1.y][movimento].kind == "r":
+                        lixo = self.tab[self.robot1.y][movimento]
+                        self.qtd_r_board -= 1
+                        self.robot1.x -= 1
+                elif self.tab[self.robot1.y][movimento] == " ":
+                    self.robot1.x -= 1
+                return self.robot1.y, self.robot1.x, lixo
 
-            if self.tab[self.robot1.y][movimento] in self.trash_list:
-                lixo = self.tab[self.robot1.y][movimento]
-                self.robot1.x -= 1
-            elif self.tab[self.robot1.y][movimento] == " ":
-                self.robot1.x -= 1
+            if direction == 6:
+                movimento = self.robot1.x + 1
+                if self.tab[self.robot1.y][movimento] in self.trash_list:
+                    if self.tab[self.robot1.y][movimento].kind == "r":
+                        lixo = self.tab[self.robot1.y][movimento]
+                        self.qtd_r_board -= 1
+                        self.robot1.x += 1
+                elif self.tab[self.robot1.y][movimento] == " ":
+                    self.robot1.x += 1
+                return self.robot1.y, self.robot1.x, lixo
 
-            return self.robot1.y, self.robot1.x, lixo
+            if direction == 8:
+                movimento = self.robot1.y - 1
+                if self.tab[movimento][self.robot1.x] in self.trash_list:
+                    if self.tab[movimento][self.robot1.x].kind == "r":
+                        lixo = self.tab[movimento][self.robot1.x]
+                        self.qtd_r_board -= 1
+                        self.robot1.y -= 1
+                elif self.tab[movimento][self.robot1.x] == " ":
+                    self.robot1.y -= 1
+                return self.robot1.y, self.robot1.x, lixo
 
-        if direction == 6:
-            movimento = self.robot1.x + 1
+            if direction == 2:
+                movimento = self.robot1.y + 1
+                if self.tab[movimento][self.robot1.x] in self.trash_list:
+                    if self.tab[movimento][self.robot1.x].kind == "r":
+                        lixo = self.tab[movimento][self.robot1.x]
+                        self.qtd_r_board -= 1
+                        self.robot1.y += 1
+                elif self.tab[movimento][self.robot1.x] == " ":
+                    self.robot1.y += 1
+                return self.robot1.y, self.robot1.x, lixo
+        else:
+            if direction == 4:
+                movimento = self.robot1.x - 1
+                if self.tab[self.robot1.y][movimento] in self.trash_list:
+                    lixo = self.tab[self.robot1.y][movimento]
+                    self.robot1.x -= 1
+                elif self.tab[self.robot1.y][movimento] == " ":
+                    self.robot1.x -= 1
+                return self.robot1.y, self.robot1.x, lixo
 
-            if self.tab[self.robot1.y][movimento] in self.trash_list:
-                lixo = self.tab[self.robot1.y][movimento]
-                self.robot1.x += 1
-            elif self.tab[self.robot1.y][movimento] == " ":
-                self.robot1.x += 1
+            if direction == 6:
+                movimento = self.robot1.x + 1
+                if self.tab[self.robot1.y][movimento] in self.trash_list:
+                    lixo = self.tab[self.robot1.y][movimento]
+                    self.robot1.x += 1
+                elif self.tab[self.robot1.y][movimento] == " ":
+                    self.robot1.x += 1
+                return self.robot1.y, self.robot1.x, lixo
 
-            return self.robot1.y, self.robot1.x, lixo
+            if direction == 8:
+                movimento = self.robot1.y - 1
+                if self.tab[movimento][self.robot1.x] in self.trash_list:
+                    lixo = self.tab[movimento][self.robot1.x]
+                    self.robot1.y -= 1
+                elif self.tab[movimento][self.robot1.x] == " ":
+                    self.robot1.y -= 1
+                return self.robot1.y, self.robot1.x, lixo
 
-        if direction == 8:
-            movimento = self.robot1.y - 1
-
-            if self.tab[movimento][self.robot1.x] in self.trash_list:
-                lixo = self.tab[movimento][self.robot1.x]
-                self.robot1.y -= 1
-            elif self.tab[movimento][self.robot1.x] == " ":
-                self.robot1.y -= 1
-
-            return self.robot1.y, self.robot1.x, lixo
-
-        if direction == 2:
-            movimento = self.robot1.y + 1
-
-            if self.tab[movimento][self.robot1.x] in self.trash_list:
-                lixo = self.tab[movimento][self.robot1.x]
-                self.robot1.y += 1
-            elif self.tab[movimento][self.robot1.x] == " ":
-                self.robot1.y += 1
-            return self.robot1.y, self.robot1.x, lixo
+            if direction == 2:
+                movimento = self.robot1.y + 1
+                if self.tab[movimento][self.robot1.x] in self.trash_list:
+                    lixo = self.tab[movimento][self.robot1.x]
+                    self.robot1.y += 1
+                elif self.tab[movimento][self.robot1.x] == " ":
+                    self.robot1.y += 1
+                return self.robot1.y, self.robot1.x, lixo
 
     def mover(self, robot, direction):
-
         if direction == 4:
             movimento = robot.x - 1
             if self.tab[robot.y][movimento] == " ":
@@ -160,6 +199,28 @@ class Board:
     def direcao_lixo(self):
         if self.robot1.pilha_lixo and self.robot1.pilha_lixo_dir:
             return self.robot1.pilha_lixo_dir.pop()
+        if self.qtd_r_board > 0:
+            left = self.robot1.x - 1
+            if (self.tab[self.robot1.y][left] in self.trash_list):
+                if self.tab[self.robot1.y][left].kind == "r":
+                    return 4
+
+            right = self.robot1.x + 1
+            if (self.tab[self.robot1.y][right] in self.trash_list):
+                if self.tab[self.robot1.y][right].kind == "r":
+                    return 6
+
+            up = self.robot1.y - 1
+            if (self.tab[up][self.robot1.x] in self.trash_list):
+                if self.tab[up][self.robot1.x].kind == "r":
+                    return 8
+
+            down = self.robot1.y + 1
+            if (self.tab[down][self.robot1.x] in self.trash_list):
+                if self.tab[down][self.robot1.x] == "r":
+                    return 2
+
+            return choice([2, 4, 6, 8])
         else:
             left = self.robot1.x - 1
             if (self.tab[self.robot1.y][left] in self.trash_list):
@@ -464,7 +525,7 @@ class Board:
                 self.tab[y][x] = self.robot2
                 self.show()
             # self.show()
-            #time.sleep(0.005)
+            time.sleep(0.005)
 
     def show(self):
 
@@ -476,10 +537,10 @@ class Board:
                 print(self.tab[i][j], end="")
 
         print("\n")
-        print("R1 y:{},x:{}, LIXO:{}, LIXEIRA_X: {}, LIXEIRA_Y:{}, R1_CONT:{}".
+        print("R1 y:{},x:{}, LIXO:{}, LIXEIRA_X: {}, LIXEIRA_Y:{}, R1_CONT:{}, QTDR:{}".
               format(self.robot1.y, self.robot1.x, len(self.trash_list),
                      len(self.trash_can_x.content),
-                     len(self.trash_can_y.content), len(self.robot1.content)))
+                     len(self.trash_can_y.content), len(self.robot1.content), self.qtd_r_board))
         print(" ")
         tipo = 0
         if self.robot2.content:
