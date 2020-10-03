@@ -235,7 +235,7 @@ class Board:
             if (self.tab[down][self.robot2.x] == self.recycler):
                 return 2
 
-            return choice([2, 4, 6, 8])
+            return choice([2, 4, 6])
 
     def direcao_incinerador(self):
         if self.robot2.pilha_incinerador and self.robot2.pilha_incinerador_dir:
@@ -249,7 +249,7 @@ class Board:
             if (self.tab[down][self.robot2.x] == self.incinerator):
                 return 2
 
-            return choice([2, 4, 6, 8])
+            return choice([2, 4, 6])
 
     def sensor_incinerador(self):
         incinerador = False
